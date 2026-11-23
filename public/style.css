@@ -1,0 +1,20 @@
+:root{--ink:#14213d;--sub:#5b6577;--line:#dfe4ec;--green:#0e7c66;--amber:#ffb703;--bg:#f3f6f9;--card:#fff}
+@media(prefers-color-scheme:dark){:root{--ink:#e8edf5;--sub:#9aa6b8;--line:#2a3550;--bg:#0f1729;--card:#18223a;--green:#2bb597}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.top{display:flex;align-items:baseline;gap:10px;padding:14px 16px;background:var(--green);color:#fff}
+.logo{font-weight:800;font-size:20px;color:#fff;text-decoration:none}.tag{font-size:13px;opacity:.9}
+main{max-width:720px;margin:0 auto;padding:14px 14px 90px}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.filters input,.filters select,.form input,.form textarea{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit}
+.filters input{grid-column:1/-1}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.card{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px;color:inherit;text-decoration:none}
+.card h3{margin:0 0 4px;font-size:17px}.meta{font-size:13px;color:var(--sub)}.pay{font-weight:700;margin-top:6px}
+.skills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.skills span{font-size:12px;border:1px solid var(--line);border-radius:12px;padding:2px 9px}
+.btn{display:inline-block;border:0;border-radius:12px;padding:13px 18px;background:var(--ink);color:var(--bg);font:600 16px system-ui;cursor:pointer;width:100%;margin-top:6px}
+.btn.alt{background:transparent;color:var(--ink);border:1.5px solid var(--line)}.btn[disabled]{opacity:.5}
+.back{display:inline-block;margin-bottom:10px;color:var(--green);font-weight:600;text-decoration:none}
+.form{margin-top:16px;display:grid;gap:10px}.form label{font-size:14px;font-weight:600;display:grid;gap:4px}
+.msg{padding:10px 12px;border-radius:10px;font-size:14px;margin-top:8px}.msg.ok{background:#e3f6ee;color:#0b5d4b}.msg.err{background:#fdecea;color:#8a1c12}
+.empty{text-align:center;color:var(--sub);padding:30px 10px}
+@media(prefers-color-scheme:dark){.msg.ok{background:#12372f;color:#9fe3cf}.msg.err{background:#3b1a17;color:#ffb4a9}}

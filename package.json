@@ -1,0 +1,8 @@
+{
+  "name": "jobpay",
+  "version": "1.0.0",
+  "private": true,
+  "description": "jobpay.in - job portal with job matching popup. Zero dependencies.",
+  "engines": { "node": ">=22.5" },
+  "scripts": { "start": "node server.js", "test": "node --test" }
+}
