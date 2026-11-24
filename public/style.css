@@ -2,7 +2,7 @@
 @media(prefers-color-scheme:dark){:root{--ink:#e8edf5;--sub:#9aa6b8;--line:#2a3550;--bg:#0f1729;--card:#18223a;--green:#2bb597}}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 .top{display:flex;align-items:baseline;gap:10px;padding:14px 16px;background:var(--green);color:#fff}
-.logo{font-weight:800;font-size:20px;color:#fff;text-decoration:none}.tag{font-size:13px;opacity:.9}
+.logo{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:20px;color:#fff;text-decoration:none}.logo img{border-radius:7px}.tag{font-size:13px;opacity:.9}
 main{max-width:720px;margin:0 auto;padding:14px 14px 90px}
 .filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
 .filters input,.filters select,.form input,.form textarea{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit}
@@ -18,3 +18,10 @@ main{max-width:720px;margin:0 auto;padding:14px 14px 90px}
 .msg{padding:10px 12px;border-radius:10px;font-size:14px;margin-top:8px}.msg.ok{background:#e3f6ee;color:#0b5d4b}.msg.err{background:#fdecea;color:#8a1c12}
 .empty{text-align:center;color:var(--sub);padding:30px 10px}
 @media(prefers-color-scheme:dark){.msg.ok{background:#12372f;color:#9fe3cf}.msg.err{background:#3b1a17;color:#ffb4a9}}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:8px}
+.row>.btn{width:auto;flex:1;margin-top:0}.btn.small{padding:10px 14px;font-size:15px;width:auto}
+.linkbtn{text-decoration:none;text-align:center;background:none;border:0;cursor:pointer;font:inherit}
+a.btn.linkbtn{background:var(--ink);color:var(--bg)}a.btn.alt.linkbtn{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+button.back{padding:0;font-size:16px}h3{margin:14px 0 8px}
+.form select,.form textarea{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit}
+.emp{margin-left:auto;color:#fff;font-size:14px;font-weight:600;border:1.5px solid rgba(255,255,255,.7);border-radius:16px;padding:4px 12px;text-decoration:none}

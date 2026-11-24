@@ -107,6 +107,18 @@ test("static files: served, security headers, no path traversal", async () => {
   for (const p of ["/../server.js", "/..%2fserver.js", "/%2e%2e/db.js", "/../../etc/passwd", "/%00", "/..\\server.js"])
     assert([400, 403, 404].includes(await raw(p)), "traversal not blocked: " + p);
   assert.strictEqual((await fetch(base + "/jobpay.db")).status, 404);
+  for (const f of ["/logo-192.png", "/logo-512.png", "/logo-48.png", "/favicon.png", "/apple-touch-icon.png"]) {
+    const r = await fetch(base + f); assert.strictEqual(r.status, 200, f); assert.strictEqual(r.headers.get("content-type"), "image/png", f);
+  }
+  const mf = await fetch(base + "/manifest.webmanifest");
+  assert.strictEqual(mf.headers.get("content-type"), "application/manifest+json");
+  const man = await mf.json(); assert(man.icons.every(i => i.src.startsWith("/logo-")) && man.name === "jobpay.in");
+  for (const page of ["/", "/employer.html"]) {
+    const html = await (await fetch(base + page)).text();
+    for (const ref of html.match(/(?:href|src)="\/[^"#]+"/g)) { // every local file the pages reference must exist
+      const url = ref.slice(ref.indexOf('"') + 1, -1); assert.strictEqual((await fetch(base + url)).status, 200, page + " -> " + url);
+    }
+  }
 });
 
 test("rate limit on apply", async () => {
