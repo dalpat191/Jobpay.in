@@ -56,6 +56,8 @@ function open(file = process.env.DB_FILE || "jobpay.db", { seed = true } = {}) {
            CREATE INDEX IF NOT EXISTS jobs_cat ON jobs(category, is_active);
            CREATE INDEX IF NOT EXISTS jobs_emp ON jobs(employer_id);`);
 
+  if (!db.prepare("PRAGMA table_info(jobs)").all().some(c => c.name === "state")) db.exec("ALTER TABLE jobs ADD COLUMN state TEXT NOT NULL DEFAULT ''");
+  db.exec("UPDATE jobs SET state='Maharashtra' WHERE state='' AND city IN ('Hadgaon','Mumbai')");
   const COLS = "title,category,city,work_mode,salary_min,salary_max,skills,type,company,description,is_sample,employer_id";
   const args = (j, sample, eid) => [j.title, j.category, j.city || "", j.workMode, j.salaryMin, j.salaryMax,
     JSON.stringify(j.requiredSkills || []), j.type, j.company || "", j.description || "", sample ? 1 : 0, eid ?? null];
@@ -65,7 +67,7 @@ function open(file = process.env.DB_FILE || "jobpay.db", { seed = true } = {}) {
     db.exec("BEGIN"); try { seedJobs.forEach(j => ins.run(...args(j, j.isSample))); db.exec("COMMIT"); } catch (e) { db.exec("ROLLBACK"); throw e; }
   }
 
-  const toJob = r => ({ id: r.id, title: r.title, category: r.category, city: r.city, workMode: r.work_mode,
+  const toJob = r => ({ id: r.id, state: r.state || "", title: r.title, category: r.category, city: r.city, workMode: r.work_mode,
     salaryMin: r.salary_min, salaryMax: r.salary_max, requiredSkills: JSON.parse(r.skills), type: r.type,
     company: r.company, description: r.description, createdAt: r.created_at, isActive: !!r.is_active,
     ...(r.applicants !== undefined ? { applicants: r.applicants, newCount: r.new_count } : {}) });
@@ -77,11 +79,11 @@ function open(file = process.env.DB_FILE || "jobpay.db", { seed = true } = {}) {
     raw: db,
     close: () => db.close(),
     activeJobs: () => db.prepare("SELECT * FROM jobs WHERE is_active=1").all().map(toJob),
-    list({ q = "", category = "", city = "", type = "", minSalary = 0, page = 1 }) {
+    list({ q = "", category = "", city = "", state = "", type = "", minSalary = 0, page = 1 }) {
       const w = ["is_active=1"], p = [];
       if (q) { w.push("(title LIKE ? ESCAPE '\\' OR skills LIKE ? ESCAPE '\\')"); p.push(`%${esc(q)}%`, `%${esc(q)}%`); }
       if (category) { w.push("category=?"); p.push(category); }
-      if (city) { w.push("city=?"); p.push(city); }
+      if (city) { w.push("city=?"); p.push(city); } if (state) { w.push("state=?"); p.push(state); }
       if (type) { w.push("type=?"); p.push(type); }
       if (minSalary) { w.push("salary_max>=?"); p.push(minSalary); }
       const where = w.join(" AND ");
@@ -92,7 +94,7 @@ function open(file = process.env.DB_FILE || "jobpay.db", { seed = true } = {}) {
     get(id) { const r = db.prepare("SELECT * FROM jobs WHERE id=? AND is_active=1").get(id); return r ? toJob(r) : null; },
     // Plain INSERT so duplicates throw UNIQUE instead of silently returning a stale id.
     create(j, employerId = null) {
-      return Number(db.prepare(`INSERT INTO jobs(${COLS}) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`).run(...args(j, false, employerId)).lastInsertRowid);
+      const __id = Number(db.prepare(`INSERT INTO jobs(${COLS}) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`).run(...args(j, false, employerId)).lastInsertRowid); if (j.state) db.prepare("UPDATE jobs SET state=? WHERE id=?").run(String(j.state), __id); return __id;
     },
     apply(jobId, name, phone, message) {
       return Number(db.prepare("INSERT INTO applications(job_id,name,phone,message) VALUES(?,?,?,?)").run(jobId, name, phone, message).lastInsertRowid);

@@ -380,3 +380,31 @@ async function route() {
 }
 addEventListener('hashchange', route);
 route();
+
+/* Password dikhao / chhupao */
+(function () {
+  function addToggle() {
+    document.querySelectorAll('#pw').forEach(function (pw) {
+      if (pw.dataset.tg) return;
+      pw.dataset.tg = '1';
+      var wrap = document.createElement('div');
+      wrap.className = 'pw-wrap';
+      pw.parentNode.insertBefore(wrap, pw);
+      wrap.appendChild(pw);
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'pw-toggle';
+      b.textContent = 'Dikhao';
+      b.addEventListener('click', function () {
+        var show = pw.type === 'password';
+        pw.type = show ? 'text' : 'password';
+        b.textContent = show ? 'Chhupao' : 'Dikhao';
+      });
+      wrap.appendChild(b);
+    });
+  }
+  try {
+    if (typeof MutationObserver !== 'undefined') new MutationObserver(addToggle).observe(document.documentElement, { childList: true, subtree: true });
+    addToggle();
+  } catch (e) {}
+})();

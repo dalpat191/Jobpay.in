@@ -102,7 +102,7 @@
     var m = location.hash.match(/^#\/job\/(\d+)$/);
     window.scrollTo(0, 0);
     if (m) return detail(m[1]);
-    document.title = "jobpay.in - Apne paas ki jobs"; list();
+    document.title = "jobpay.in - Nearby jobs"; list();
   }
   api("/api/match/meta").then(function (d) { meta = d; window.addEventListener("hashchange", route); route(); })
     .catch(function () { show(el("div", { class: "msg err", role: "alert", text: "Server se connect nahi ho paya. Page refresh karo." })); });

@@ -1,7 +1,7 @@
 {
   "name": "jobpay.in",
   "short_name": "jobpay",
-  "description": "Apne paas ki jobs dhoondo",
+  "description": "Nearby jobs dhoondo",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f3f6f9",
