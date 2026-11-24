@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const { open } = require("./db");
 const { hashPassword, verifyPassword, newToken, hashToken } = require("./auth");
 const { buildMeta, match, createLimiter, MAX_BODY_CHARS } = require("./core");
+function metaWithStates(db) { const jobs = db.activeJobs(); const m = buildMeta(jobs); const by = {}; jobs.forEach(function (j) { if (!j.state || !j.city) return; (by[j.state] = by[j.state] || new Set()).add(j.city); }); m.states = Object.keys(by).sort(); m.citiesByState = {}; Object.keys(by).forEach(function (k) { m.citiesByState[k] = Array.from(by[k]).sort(); }); return m; }
 const categories = require("./data/categories");
 
 const CATS = new Set(categories.map(c => c.key));
@@ -40,7 +41,7 @@ function createApp(db, { adminKey = process.env.ADMIN_KEY || "", trustProxy = pr
   const txt = (v, max) => (typeof v === "string" ? v : "").trim().replace(/\s+/g, " ").slice(0, max);
 
   function cleanJob(b) {
-    const j = { title: txt(b.title, 80), category: b.category, city: txt(b.city, 60), workMode: b.workMode || "onsite",
+    const j = { title: txt(b.title, 80), category: b.category, city: txt(b.city, 60), state: txt(b.state, 40), workMode: b.workMode || "onsite",
       salaryMin: int(b.salaryMin, -1), salaryMax: int(b.salaryMax, -1), type: b.type || "Full Time",
       company: txt(b.company, 80), description: txt(b.description, 1500),
       requiredSkills: Array.isArray(b.requiredSkills) ? b.requiredSkills.slice(0, 15).map(s => txt(s, 40)).filter(Boolean) : [] };
@@ -154,14 +155,14 @@ function createApp(db, { adminKey = process.env.ADMIN_KEY || "", trustProxy = pr
     }
     if (p.startsWith("/api/employer/")) return employerApi(req, res, p, m, ip);
 
-    if (p === "/api/match/meta" && m === "GET") return send(res, 200, buildMeta(db.activeJobs()));
+    if (p === "/api/match/meta" && m === "GET") return send(res, 200, metaWithStates(db));
     if (p === "/api/match" && m === "POST") {
       if (!matchLimit(ip)) return send(res, 429, { error: "Too many requests. Wait a minute." }, { "Retry-After": "60" });
       const out = match(await readJson(req), db.activeJobs()); return send(res, out.status, out.json);
     }
     if (p === "/api/jobs" && m === "GET") {
       const q = url.searchParams, cat = q.get("category") || "", type = q.get("type") || "";
-      return send(res, 200, db.list({ q: txt(q.get("q"), 60), category: CATS.has(cat) ? cat : "", city: txt(q.get("city"), 60),
+      return send(res, 200, db.list({ q: txt(q.get("q"), 60), category: CATS.has(cat) ? cat : "", city: txt(q.get("city"), 60), state: txt(q.get("state"), 40),
         type: TYPES.includes(type) ? type : "", minSalary: Math.min(Math.max(int(q.get("minSalary")), 0), 10000000), page: Math.min(Math.max(int(q.get("page"), 1), 1), 1000) }));
     }
     if (p === "/api/jobs" && m === "POST") { // employer posting, protected by ADMIN_KEY

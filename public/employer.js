@@ -193,14 +193,14 @@ async function openJobForm(onDone) {
         if (!Number.isFinite(min) || !Number.isFinite(max) || !g('jmin') || !g('jmax') || min < 0 || max < min) { err.textContent = 'Salary sahi likhein (kam se kam, zyada se zyada).'; return; }
         btn.disabled = true;
         try {
-          await api(API.addJob, { title: g('jt'), category: g('jc'), city: g('jl'), workMode: 'onsite', salaryMin: min, salaryMax: max,
+          await api(API.addJob, { title: g('jt'), category: g('jc'), city: g('jl'), state: g('js'), workMode: 'onsite', salaryMin: min, salaryMax: max,
             requiredSkills: g('jsk').split(',').map((s) => s.trim()).filter(Boolean), description: g('jd') });
           close(); toast('Job post ho gayi'); onDone();
         } catch (x) { err.textContent = x.message; btn.disabled = false; }
       },
     }, ...f('jt', 'Job title', { maxlength: '80', placeholder: 'jaise: Delivery partner' }),
       h('label', { for: 'jc' }, 'Field'), h('select', { id: 'jc' }, ...cats.map((c) => h('option', { value: c.key }, c.label))),
-      ...f('jl', 'Sheher', { maxlength: '60', placeholder: 'jaise: Hadgaon' }),
+      ...f('js', 'State', { maxlength: '40', placeholder: 'jaise: Maharashtra', list: 'jp-states' }), h('datalist', { id: 'jp-states' }, ...['Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal','Delhi','Jammu and Kashmir','Ladakh','Chandigarh','Puducherry'].map(s => h('option', { value: s }))), ...f('jl', 'Sheher', { maxlength: '60', placeholder: 'jaise: Hadgaon' }),
       ...f('jmin', 'Salary kam se kam (₹ / mahina)', { type: 'number', inputmode: 'numeric', min: '0', placeholder: '10000' }),
       ...f('jmax', 'Salary zyada se zyada (₹ / mahina)', { type: 'number', inputmode: 'numeric', min: '0', placeholder: '15000' }),
       ...f('jsk', 'Zaroori skills (comma se alag, optional)', { maxlength: '200', placeholder: 'Cooking, Billing' }),

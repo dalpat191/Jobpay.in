@@ -1,7 +1,7 @@
 (function () {
   "use strict";
   var app = document.getElementById("app");
-  var f = { q: "", category: "", city: "", type: "", minSalary: "" }, page = 1, meta = null, timer;
+  var f = { q: "", category: "", city: "", state: "", type: "", minSalary: "" }, page = 1, meta = null, timer;
   var TYPES = ["Full Time", "Part Time", "Daily Wage", "Gig", "Freelance", "Commission"];
   var SAL = [["Salary (any)", ""], ["10,000+", "10000"], ["20,000+", "20000"], ["30,000+", "30000"], ["50,000+", "50000"]];
 
@@ -44,7 +44,8 @@
     var reload = function () { page = 1; load(); };
     box.appendChild(el("div", { class: "filters" }, [inp,
       select("Field", [["Sab fields", ""]].concat(meta.categories.map(function (c) { return [c.label, c.key]; })), "category", reload),
-      select("City", [["Sab cities", ""]].concat(meta.cities.map(function (c) { return [c, c]; })), "city", reload),
+      select("State", [["Sab states", ""]].concat((meta.states || []).map(function (c) { return [c, c]; })), "state", function () { f.city = ""; reload(); }),
+      select("City", [["Sab cities", ""]].concat(((f.state && meta.citiesByState && meta.citiesByState[f.state]) || meta.cities).map(function (c) { return [c, c]; })), "city", reload),
       select("Job type", [["Job type (any)", ""]].concat(TYPES.map(function (t) { return [t, t]; })), "type", reload),
       select("Minimum salary", SAL, "minSalary", reload)]));
     box.appendChild(results);
